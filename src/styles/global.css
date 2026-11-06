@@ -1,0 +1,896 @@
+/* Estilos globais do EstudaAí. As cores vêm de tokens.css (paleta C). */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte-texto); /* Nunito Sans: textos, formulários, botões e menus */
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Campos e botões não herdam a fonte sozinhos no navegador, então forçamos aqui */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* Fredoka: títulos e destaques */
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin: 0 0 var(--espaco-2);
+}
+
+h2 {
+  font-size: 1.125rem;
+  margin: var(--espaco-5) 0 var(--espaco-3);
+}
+
+a {
+  color: var(--cor-primaria);
+  font-weight: 500;
+}
+
+/* Layout com menu lateral (só quando há usuário logado) */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout-conteudo {
+  flex: 1; /* o conteúdo ocupa todo o espaço que sobra ao lado do menu */
+  min-width: 0;
+}
+
+/* Plano de fundo das telas internas (só com usuário logado, por isso ".layout" na frente;
+   login e cadastro têm o fundo próprio em .fundo-auth).
+   "fixed" prende a imagem à janela: ao rolar uma página longa, só o conteúdo se move
+   e a imagem não estica. */
+.layout .layout-conteudo {
+  background-color: var(--cor-fundo); /* aparece enquanto a imagem carrega */
+  background-image: url("../assets/fundo-interno.webp");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Menu lateral */
+.menu-lateral {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky; /* o menu fica parado enquanto a página rola */
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Fundo lavanda em degradê (de cima para baixo), combinando com os planos de fundo */
+  background: linear-gradient(180deg, var(--cor-primaria-suave) 0%, #ddd7f6 100%);
+  border-right: 3px solid var(--cor-primaria);
+  padding: var(--espaco-4);
+}
+
+.menu-logo img {
+  display: block;
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+}
+
+/* O botão "Menu" só aparece no celular (ver @media abaixo) */
+.menu-botao {
+  display: none;
+}
+
+.menu-conteudo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-5);
+}
+
+.menu-usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding-bottom: var(--espaco-4);
+  border-bottom: 1px solid rgba(75, 63, 160, 0.2); /* roxo bem claro, aparece sobre o lavanda */
+}
+
+.menu-usuario strong,
+.menu-usuario span {
+  display: block;
+}
+
+.menu-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-sm);
+  color: var(--cor-texto);
+  text-decoration: none;
+}
+
+/* Sobre o fundo lavanda, o destaque passa a ser branco */
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Tela atual: fundo lavanda e uma barra à esquerda (não depende só da cor, RNF03) */
+.menu-item.active {
+  background: var(--cor-superficie);
+  box-shadow: inset 4px 0 0 var(--cor-primaria);
+  font-weight: 600;
+}
+
+.menu-sair {
+  margin-top: auto; /* empurra o botão para o fim do menu */
+  font: inherit;
+  font-weight: 500;
+  color: var(--cor-erro-texto);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  cursor: pointer;
+}
+
+.menu-sair:hover {
+  background: var(--cor-erro-fundo);
+}
+
+/* Celular e tablet pequeno: o menu vira uma barra no topo
+   e os links só aparecem depois de tocar em "Menu". */
+@media (max-width: 768px) {
+  /* No celular "fixed" costuma falhar (principalmente no iPhone), então a imagem rola junto */
+  .layout .layout-conteudo {
+    background-attachment: scroll;
+  }
+
+  .pagina {
+    padding: var(--espaco-5) var(--espaco-4);
+  }
+
+  /* No celular a margem em volta da folha é menor, para sobrar espaço para o conteúdo */
+  .layout .pagina {
+    margin: var(--espaco-3);
+    min-height: auto;
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .menu-lateral {
+    width: 100%;
+    height: auto;
+    border-right: 0;
+    border-bottom: 3px solid var(--cor-primaria);
+    padding: var(--espaco-2) var(--espaco-4);
+    z-index: 10;
+  }
+
+  .menu-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .menu-logo img {
+    height: 40px;
+    width: auto;
+  }
+
+  .menu-botao {
+    display: block;
+    font: inherit;
+    font-weight: 500;
+    color: var(--cor-primaria);
+    background: var(--cor-superficie); /* branco, para aparecer sobre o menu lavanda */
+    border: 0;
+    border-radius: var(--raio-sm);
+    padding: var(--espaco-2) var(--espaco-4);
+    cursor: pointer;
+  }
+
+  .menu-conteudo {
+    display: none; /* fechado por padrão */
+    margin-top: var(--espaco-3);
+    padding-bottom: var(--espaco-2);
+  }
+
+  .menu-lateral.aberto .menu-conteudo {
+    display: flex;
+  }
+}
+
+/* Layout */
+/* Conteúdo das telas internas: começa logo ao lado do menu (sem centralizar)
+   e ocupa toda a largura disponível, para não sobrar espaço vazio em telas largas. */
+.pagina {
+  padding: var(--espaco-5) 32px;
+}
+
+/* Telas internas: o conteúdo fica sobre uma "folha" clara, com margem em volta.
+   Assim títulos, links e textos cinza não ficam em cima das partes escuras do fundo,
+   e o plano de fundo continua aparecendo nas bordas, como uma moldura.
+   (min-height desconta a margem de cima e de baixo para a folha ir até o fim da tela.) */
+.layout .pagina {
+  margin: var(--espaco-5);
+  min-height: calc(100vh - 2 * var(--espaco-5));
+  background: var(--cor-folha);
+  border: 1px solid var(--cor-borda);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(42, 35, 98, 0.06);
+}
+
+/* Novo edital: duas colunas lado a lado (dados do edital | disciplinas e tópicos).
+   Com menos de 1100px de largura vira uma coluna só (ver @media logo abaixo). */
+.novo-edital-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+  align-items: start; /* cada coluna fica do tamanho do próprio conteúdo */
+}
+
+/* O título de cada coluna começa sem espaço em cima, para as duas ficarem alinhadas */
+.novo-edital-grade h2 {
+  margin-top: 0;
+}
+
+@media (max-width: 1100px) {
+  .novo-edital-grade {
+    grid-template-columns: 1fr;
+  }
+
+  /* Uma embaixo da outra, o título "Disciplinas e tópicos" volta a ter espaço em cima */
+  .novo-edital-grade section + section h2 {
+    margin-top: var(--espaco-5);
+  }
+}
+
+/* O campo de busca também não precisa ser mais largo que isso. */
+.campo-busca {
+  max-width: 560px;
+}
+
+/* Plano de fundo das telas de entrar e criar conta (classe colocada no App.jsx).
+   "cover" faz a imagem cobrir a tela toda sem distorcer. */
+.fundo-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center; /* centraliza o formulário na altura da tela */
+  background-color: var(--cor-fundo); /* aparece enquanto a imagem carrega */
+  background-image: url("../assets/fundo-auth.webp");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Telas de entrar e criar conta (componente LayoutAuth):
+   cartão da frase à esquerda e formulário à direita, lado a lado. */
+.auth-dividido {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* duas colunas do mesmo tamanho */
+  align-items: center; /* centraliza as duas colunas na altura */
+  gap: 64px;
+  padding: 48px 32px;
+}
+
+/* Cartão da frase: retângulo com cantos arredondados, fundo lavanda e borda roxa grossa */
+.auth-frase {
+  margin: 0;
+  background: var(--cor-primaria-suave);
+  border: 8px solid var(--cor-primaria);
+  border-radius: 32px;
+  padding: 48px;
+  box-shadow: 0 12px 32px rgba(42, 35, 98, 0.12);
+}
+
+.auth-frase blockquote {
+  margin: 0;
+}
+
+/* Aspas grandes decorativas antes da frase (só enfeite, por isso via CSS) */
+.auth-frase blockquote::before {
+  content: "“"; /* aspa de abertura */
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-size: 6rem;
+  line-height: 1;
+  height: 3.5rem;
+  color: var(--cor-acao);
+}
+
+.auth-frase p {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.5rem, 2.6vw, 2.4rem); /* cresce com a tela, entre um mínimo e um máximo */
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--cor-texto);
+}
+
+.auth-frase figcaption {
+  margin-top: var(--espaco-5);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cor-primaria);
+}
+
+/* Traço antes do nome do autor */
+.auth-frase figcaption::before {
+  content: "— ";
+}
+
+/* Lado do formulário */
+.auth-lado-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Mesma "folha" clara das telas internas: o subtítulo, os links e a dica
+     que ficam fora do cartão branco continuam legíveis sobre o fundo. */
+  background: var(--cor-folha);
+  border: 1px solid var(--cor-borda);
+  border-radius: 24px;
+  padding: 32px var(--espaco-5);
+}
+
+/* O formulário não precisa ocupar a coluna toda: até 400px fica mais fácil de ler */
+.auth-lado-form > * {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-lado-form .auth-topo h1 {
+  margin: var(--espaco-2) 0 0;
+}
+
+/* Celular e tablet pequeno: um embaixo do outro, com o formulário primeiro */
+@media (max-width: 768px) {
+  .auth-dividido {
+    grid-template-columns: 1fr;
+    gap: var(--espaco-5);
+    padding: var(--espaco-5) var(--espaco-4);
+  }
+
+  .auth-lado-form {
+    order: 1; /* formulário aparece antes da frase */
+  }
+
+  .auth-frase {
+    order: 2;
+    border-width: 5px;
+    border-radius: 24px;
+    padding: var(--espaco-5);
+  }
+}
+
+/* Sombra leve para o cartão do formulário se destacar do fundo */
+.fundo-auth .card {
+  box-shadow: 0 8px 24px rgba(42, 35, 98, 0.08);
+}
+
+.auth-topo {
+  text-align: center;
+  margin-bottom: var(--espaco-4);
+}
+
+.logo-grande {
+  display: block;
+  width: 260px;
+  max-width: 100%;
+  height: auto;
+  margin: var(--espaco-4) auto var(--espaco-2);
+}
+
+.texto-sec {
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.centro {
+  text-align: center;
+}
+
+.dica {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--cor-texto-secundario);
+}
+
+.voltar {
+  display: inline-block;
+  margin-bottom: var(--espaco-3);
+  font-size: 0.9rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Cards */
+.card {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-4);
+  margin-bottom: var(--espaco-3);
+}
+
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 400;
+}
+
+.card-link:hover {
+  border-color: var(--cor-primaria);
+}
+
+.vazio {
+  text-align: center;
+}
+
+.vazio p {
+  margin: var(--espaco-1) 0;
+}
+
+/* Formulários */
+.campo {
+  margin-bottom: var(--espaco-3);
+  flex: 1;
+}
+
+.campo label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espaco-1);
+}
+
+input,
+select {
+  width: 100%;
+  font: inherit;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  min-height: 40px;
+}
+
+input[aria-invalid="true"] {
+  border-color: var(--cor-erro);
+}
+
+.campo-erro {
+  color: var(--cor-erro-texto);
+  font-size: 0.85rem;
+  margin: var(--espaco-1) 0 0;
+}
+
+.alerta-erro {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  font-size: 0.9rem;
+  margin: 0 0 var(--espaco-3);
+}
+
+.linha-dupla {
+  display: flex;
+  gap: var(--espaco-3);
+  flex-wrap: wrap;
+}
+
+.linha-dupla .campo {
+  min-width: 160px;
+}
+
+.adicionar-linha {
+  display: flex;
+  gap: var(--espaco-2);
+  flex-wrap: wrap;
+}
+
+.adicionar-linha input {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Botões */
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn-acao {
+  background: var(--cor-acao);
+  color: var(--cor-sobre-acao);
+  border: 0;
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-5);
+  min-height: 40px;
+  font-weight: 600;
+}
+
+.btn-acao:hover {
+  filter: brightness(0.95);
+}
+
+.btn-bloco {
+  width: 100%;
+}
+
+.btn-sec {
+  background: transparent;
+  color: var(--cor-primaria);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  min-height: 36px;
+  font-weight: 500;
+}
+
+.btn-sec:hover {
+  background: var(--cor-primaria-suave);
+}
+
+.btn-link {
+  background: none;
+  border: 0;
+  color: var(--cor-primaria);
+  text-decoration: underline;
+  font-weight: 500;
+  padding: var(--espaco-1);
+}
+
+.acoes {
+  display: flex;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-5);
+}
+
+/* Chips */
+.chip {
+  display: inline-block;
+  font-size: 0.8rem;
+  padding: 2px var(--espaco-2);
+  border-radius: var(--raio-pill);
+  white-space: nowrap;
+}
+
+.chip-ok {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso-texto);
+}
+
+.chip-erro {
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+}
+
+.chip-neutro {
+  background: var(--cor-primaria-suave);
+  color: var(--cor-texto);
+}
+
+/* Status "Previsto": amarelo claro com texto marrom escuro (contraste acima de 4,5:1) */
+.chip-previsto {
+  background: #fdf1d8;
+  color: #6b4a00;
+}
+
+/* Lista de editais */
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Grade: coloca quantos cards couberem por linha (cada um com no mínimo 320px).
+     Em telas pequenas sobra só uma coluna, sem precisar de @media. */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--espaco-3);
+}
+
+/* Dentro da grade, o espaço entre os cards vem do "gap"; o card ocupa a altura toda da célula. */
+.lista .card {
+  margin: 0;
+  height: 100%;
+}
+
+.edital-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+}
+
+.edital-item .edital-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.edital-item strong {
+  display: block;
+  color: var(--cor-texto);
+}
+
+/* Detalhe do edital */
+.disciplina {
+  margin-bottom: var(--espaco-3);
+}
+
+.disciplina-cab {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  background: var(--cor-primaria-suave);
+  color: var(--cor-texto);
+  border: 0;
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-3);
+  font-weight: 500;
+  text-align: left;
+}
+
+.topicos {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--espaco-1);
+}
+
+.topicos > li {
+  border-bottom: 1px solid var(--cor-borda);
+  padding: var(--espaco-3) 0;
+}
+
+.topico-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  flex-wrap: wrap;
+}
+
+.topico-acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.materiais {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-3);
+  margin-top: var(--espaco-2);
+}
+
+.materiais ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.materiais li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-1) 0;
+}
+
+.materiais p {
+  margin: 0;
+}
+
+/* Cadastro de edital */
+.disciplina-titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--espaco-2);
+}
+
+.topicos-edicao {
+  list-style: none;
+  margin: 0 0 var(--espaco-3);
+  padding: 0;
+}
+
+.topicos-edicao li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--espaco-1) var(--espaco-3);
+  background: var(--cor-primaria-suave);
+  border-radius: var(--raio-sm);
+  margin-bottom: var(--espaco-1);
+  font-size: 0.9rem;
+}
+
+/* Foco visível para teclado (RNF03) */
+:focus-visible {
+  outline: 3px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .acoes {
+    flex-direction: column;
+  }
+}
+
+/* Ícones ilustrados */
+.icone {
+  display: inline-block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.icone-vazio {
+  display: block;
+  margin: 0 auto var(--espaco-2);
+}
+
+.titulo-icone {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.disciplina-nome {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+/* Busca: campo de texto e botão "Filtros" na mesma linha */
+.busca-linha {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  flex-wrap: wrap; /* no celular o botão desce para a linha de baixo */
+}
+
+.busca-linha .campo-busca {
+  flex: 1;
+  min-width: 220px;
+}
+
+.btn-filtros {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: 40px; /* mesma altura do campo de busca */
+  padding: var(--espaco-2) var(--espaco-4);
+  font-weight: 600;
+  color: var(--cor-primaria);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+}
+
+.btn-filtros:hover,
+.btn-filtros.aberto {
+  background: var(--cor-primaria-suave);
+}
+
+/* Retângulo que abre para baixo com os filtros */
+.painel-filtros {
+  border-color: var(--cor-primaria);
+  animation: abrir-painel 0.15s ease-out; /* pequena animação ao abrir */
+}
+
+@keyframes abrir-painel {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Os campos se organizam sozinhos: quantos couberem por linha, cada um com no mínimo 200px */
+.filtros-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0 var(--espaco-4);
+}
+
+/* Grupo de datas (Inscrição / Data da prova): os dois campos ficam lado a lado */
+.filtro-grupo {
+  display: flex;
+  gap: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3) 0;
+  margin: 0 0 var(--espaco-3);
+  grid-column: span 2; /* o grupo ocupa duas colunas da grade */
+}
+
+.filtro-grupo legend {
+  padding: 0 var(--espaco-1);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.filtros-acoes {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Edital na lista: as linhas de informação ficam uma embaixo da outra */
+.edital-info span {
+  display: block;
+}
+
+/* Dados do edital na página de detalhe */
+.edital-dados {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--espaco-3);
+  margin: var(--espaco-3) 0 var(--espaco-4);
+}
+
+.edital-dados dt {
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+}
+
+.edital-dados dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Telas estreitas: o grupo de datas ocupa a linha toda e os campos ficam um embaixo do outro */
+@media (max-width: 480px) {
+  .filtro-grupo {
+    grid-column: auto;
+    flex-direction: column;
+    gap: 0;
+  }
+}
