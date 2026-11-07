@@ -1,7 +1,4 @@
-import { useState } from "react";
-
 // Gráfico de barras com o peso de cada matéria na prova (usado em EditalDetalhe.jsx).
-// A pessoa escolhe o cargo e o gráfico mostra quanto cada matéria vale na nota.
 //
 // Por que pontos e não só número de questões? Porque as questões podem ter pesos
 // diferentes. Ex.: 10 questões de peso 6 valem 60 pontos, mais que 5 questões de peso 2.
@@ -12,14 +9,10 @@ import { useState } from "react";
 // Props:
 //   provas -> objeto com as provas do edital, ex.: { medio: { nome, materias: [...] } }
 //   cargos -> lista de cargos; cada cargo diz qual prova faz no campo "prova"
+//   cargo  -> cargo escolhido no topo da página (null = todos os cargos)
 
-export default function GraficoMaterias({ provas, cargos }) {
-  // Começa mostrando o primeiro cargo da lista. Guardamos a posição (índice) do cargo.
-  const [cargoEscolhido, setCargoEscolhido] = useState(0);
-
-  const cargo = cargos[cargoEscolhido];
-  const prova = provas[cargo.prova];
-
+// Desenha o gráfico de UMA prova.
+function GraficoProva({ prova }) {
   // Pontos de cada matéria = número de questões x peso de cada questão.
   // Depois ordena da que vale mais para a que vale menos (b - a = ordem decrescente).
   const materias = prova.materias
@@ -31,27 +24,9 @@ export default function GraficoMaterias({ provas, cargos }) {
   const totalQuestoes = materias.reduce((soma, m) => soma + m.questoes, 0);
 
   return (
-    <div>
-      {/* Só mostra a escolha de cargo se o edital tiver mais de um cargo */}
-      {cargos.length > 1 && (
-        <div className="campo grafico-escolha">
-          <label htmlFor="cargo-grafico">Ver a prova do cargo</label>
-          <select
-            id="cargo-grafico"
-            value={cargoEscolhido}
-            onChange={(e) => setCargoEscolhido(Number(e.target.value))}
-          >
-            {cargos.map((c, i) => (
-              <option key={c.nome} value={i}>
-                {c.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
+    <>
       <p className="texto-sec">
-        {prova.nome}: {totalQuestoes} questões, {totalPontos} pontos no total.
+        {totalQuestoes} questões, {totalPontos} pontos no total.
       </p>
 
       <ul className="grafico">
@@ -79,6 +54,40 @@ export default function GraficoMaterias({ provas, cargos }) {
           );
         })}
       </ul>
+    </>
+  );
+}
+
+export default function GraficoMaterias({ provas, cargos, cargo }) {
+  // Com um cargo escolhido: mostra só a prova que esse cargo faz.
+  if (cargo) {
+    const prova = provas[cargo.prova];
+    return (
+      <div>
+        <h3 className="dash-subtitulo">Prova de {cargo.nome}</h3>
+        <GraficoProva prova={prova} />
+      </div>
+    );
+  }
+
+  // Sem cargo escolhido: mostra todas as provas, uma embaixo da outra, dizendo
+  // quais cargos fazem cada uma. Object.entries transforma o objeto em lista de [chave, prova].
+  return (
+    <div className="grafico-provas">
+      {Object.entries(provas).map(([chave, prova]) => {
+        // Nomes dos cargos que fazem esta prova, separados por vírgula.
+        const quemFaz = cargos
+          .filter((c) => c.prova === chave)
+          .map((c) => c.nome)
+          .join(", ");
+        return (
+          <div key={chave}>
+            <h3 className="dash-subtitulo">{prova.nome}</h3>
+            <p className="texto-sec grafico-cargos">Cargos: {quemFaz}</p>
+            <GraficoProva prova={prova} />
+          </div>
+        );
+      })}
     </div>
   );
 }

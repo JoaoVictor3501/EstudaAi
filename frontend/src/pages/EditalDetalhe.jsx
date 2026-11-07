@@ -7,6 +7,8 @@ import LinhaDoTempo from "../components/LinhaDoTempo";
 import TabelaCargos from "../components/TabelaCargos";
 import GraficoMaterias from "../components/GraficoMaterias";
 import Secao from "../components/Secao";
+import Isencao from "../components/Isencao";
+import SeletorCargo from "../components/SeletorCargo";
 import {
   tipoChipStatus,
   formatarData,
@@ -59,8 +61,9 @@ function CardResumo({ icone, rotulo, valor, detalhe }) {
   );
 }
 
-// Dashboard do edital: junta as informações mais importantes em cards, linha do tempo,
-// gráfico de matérias e tabela de cargos, para a pessoa entender o edital sem ler o PDF todo.
+// Dashboard do edital: junta as informações mais importantes em cards, tabela de cargos,
+// isenção, gráfico de matérias e linha do tempo, para a pessoa entender o edital sem ler
+// o PDF todo. A pessoa pode escolher um cargo no topo e a página mostra só os dados dele.
 // Também continua mostrando as disciplinas e materiais (RF02 e RF12) dos editais
 // cadastrados na tela "Novo edital".
 export default function EditalDetalhe() {
@@ -69,6 +72,9 @@ export default function EditalDetalhe() {
   const edital = editais.find((e) => e.id === Number(id));
   const [abertas, setAbertas] = useState({}); // disciplinas abertas
   const [topicoAberto, setTopicoAberto] = useState(null); // "disciplina/topico"
+  // Nome do cargo escolhido no topo da página ("" = todos os cargos).
+  // Fica aqui (e não no SeletorCargo) porque o resumo, a tabela e o gráfico usam essa escolha.
+  const [cargoEscolhido, setCargoEscolhido] = useState("");
 
   // Se o id da URL não existir, avisa e oferece voltar.
   if (!edital) {
@@ -97,6 +103,13 @@ export default function EditalDetalhe() {
   // Maior salário entre os cargos (Math.max precisa dos números "espalhados" com ...).
   const maiorSalario = temCargos ? Math.max(...cargos.map((c) => c.salario)) : null;
   const vagas = totalVagas(edital);
+
+  // Cargo que a página está mostrando agora:
+  //   - edital com um cargo só (IFSP): é sempre ele, nem precisa escolher;
+  //   - senão: o cargo escolhido na lista, ou null quando está em "Todos os cargos".
+  // find devolve undefined se não achar; "|| null" troca por null para ficar mais claro.
+  const cargo =
+    cargos.length === 1 ? cargos[0] : cargos.find((c) => c.nome === cargoEscolhido) || null;
 
   return (
     <main className="pagina">
@@ -137,25 +150,62 @@ export default function EditalDetalhe() {
         {textoPrazo(edital)}
       </p>
 
-      {/* Resumo em cards: o que a pessoa mais quer saber, em poucos segundos */}
+      {/* 1ª pergunta da pessoa: "qual cargo é pra mim?". Só aparece com mais de um cargo. */}
+      {cargos.length > 1 && (
+        <SeletorCargo cargos={cargos} valor={cargoEscolhido} aoMudar={setCargoEscolhido} />
+      )}
+
+      {/* Resumo em cards: o que a pessoa mais quer saber, em poucos segundos.
+          Os 3 primeiros cards mudam conforme o cargo escolhido. */}
       <h2 className="sr-only">Resumo do edital</h2>
       <dl className="resumo">
-        {temCargos && (
+        {/* Com cargo escolhido: dados só dele. Sem cargo: totais do edital. */}
+        {cargo && (
+          <>
+            <CardResumo
+              icone="perfil"
+              rotulo="Vagas"
+              valor={cargo.vagas > 0 ? cargo.vagas : "Cadastro reserva"}
+              detalhe={`${cargo.nivel} · ${cargo.carga}`}
+            />
+            <CardResumo
+              icone="conquistas"
+              rotulo="Salário"
+              valor={formatarDinheiro(cargo.salario)}
+              detalhe={cargo.observacao}
+            />
+            <CardResumo
+              icone="favoritos"
+              rotulo="Taxa de inscrição"
+              valor={formatarDinheiro(cargo.taxa)}
+              detalhe={edital.isencao && "Tem isenção para alguns casos"}
+            />
+          </>
+        )}
+        {!cargo && temCargos && (
+          <>
+            <CardResumo
+              icone="perfil"
+              rotulo="Vagas"
+              valor={vagas}
+              detalhe={`em ${cargos.length} cargos`}
+            />
+            <CardResumo
+              icone="conquistas"
+              rotulo="Maior salário"
+              valor={formatarDinheiro(maiorSalario)}
+            />
+          </>
+        )}
+        {/* Se o edital tem isenção, o card da taxa avisa (o quadro completo fica mais abaixo) */}
+        {!cargo && (
           <CardResumo
-            icone="perfil"
-            rotulo="Vagas"
-            valor={vagas}
-            detalhe={`em ${cargos.length} ${cargos.length === 1 ? "cargo" : "cargos"}`}
+            icone="favoritos"
+            rotulo="Taxa de inscrição"
+            valor={textoTaxa(edital)}
+            detalhe={edital.isencao && "Tem isenção para alguns casos"}
           />
         )}
-        {temCargos && (
-          <CardResumo
-            icone="conquistas"
-            rotulo="Maior salário"
-            valor={formatarDinheiro(maiorSalario)}
-          />
-        )}
-        <CardResumo icone="favoritos" rotulo="Taxa de inscrição" valor={textoTaxa(edital)} />
         <CardResumo
           icone="calendario"
           rotulo="Inscrições"
@@ -173,25 +223,36 @@ export default function EditalDetalhe() {
         />
       </dl>
 
-      {/* Cada card abaixo é uma <Secao>: clicando no título, a pessoa mostra ou esconde o card.
-          Duas colunas em telas largas: linha do tempo de um lado, matérias do outro. */}
-      <div className="dash-colunas">
-        {edital.cronograma && (
-          <Secao icone="calendario" titulo="Linha do tempo">
-            <LinhaDoTempo cronograma={edital.cronograma} />
-          </Secao>
-        )}
-
-        {temCargos && edital.provas && (
-          <Secao icone="estudos" titulo="O que mais cai na prova">
-            <GraficoMaterias provas={edital.provas} cargos={cargos} />
-          </Secao>
-        )}
-      </div>
+      {/* As seções seguem a ordem das perguntas de quem vai prestar o concurso:
+            1. Quais cargos, quantas vagas e quanto paga?
+            2. Quanto custa a inscrição e dá para não pagar? (isenção)
+            3. O que estudar?
+            4. Quais são as datas?
+            5. Como funciona a seleção?
+          Cada uma é uma <Secao>: clicando no título, a pessoa mostra ou esconde o card. */}
 
       {temCargos && (
         <Secao icone="disciplinas" titulo="Cargos, vagas e salários">
-          <TabelaCargos cargos={cargos} />
+          <TabelaCargos cargos={cargos} escolhido={cargo ? cargo.nome : ""} />
+        </Secao>
+      )}
+
+      {/* Isenção da taxa: logo depois da tabela, que é onde a pessoa vê o valor da taxa */}
+      {edital.isencao && (
+        <Secao icone="favoritos" titulo="Isenção da taxa de inscrição">
+          <Isencao isencao={edital.isencao} />
+        </Secao>
+      )}
+
+      {temCargos && edital.provas && (
+        <Secao icone="estudos" titulo="O que mais cai na prova">
+          <GraficoMaterias provas={edital.provas} cargos={cargos} cargo={cargo} />
+        </Secao>
+      )}
+
+      {edital.cronograma && (
+        <Secao icone="calendario" titulo="Linha do tempo">
+          <LinhaDoTempo cronograma={edital.cronograma} />
         </Secao>
       )}
 
@@ -199,10 +260,16 @@ export default function EditalDetalhe() {
       {(edital.etapas || edital.areas) && (
         <Secao icone="progresso" titulo="Como funciona a seleção">
           {edital.etapas && (
-            // Lista em ordem: etapa 1, etapa 2...
+            // Lista em ordem (<ol>), mostrada como passos lado a lado.
+            // O número vem de "i + 1" porque o map começa a contar do 0.
             <ol className="etapas-lista">
-              {edital.etapas.map((etapa) => (
-                <li key={etapa}>{etapa}</li>
+              {edital.etapas.map((etapa, i) => (
+                <li key={etapa} className="etapa-passo">
+                  <span className="etapa-numero" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  {etapa}
+                </li>
               ))}
             </ol>
           )}

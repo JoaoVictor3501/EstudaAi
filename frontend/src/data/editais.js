@@ -16,6 +16,8 @@
 //   cronograma    -> datas mais importantes, para a linha do tempo
 //   provas        -> como cada prova é dividida em matérias (questoes = nº de questões, peso = pontos por questão)
 //   cargos        -> cargos com vagas, salário, taxa e qual prova o cargo faz (campo "prova")
+//   isencao       -> quem pode pedir para não pagar a taxa de inscrição:
+//                    { inicio, fim, resultado, ondePedir, quemTem: [{ titulo, comoComprovar }] }
 //   disciplinas   -> lista usada pelos editais cadastrados na tela "Novo edital"
 
 export const editaisIniciais = [
@@ -35,6 +37,28 @@ export const editaisIniciais = [
     locais: ["Florestópolis/PR"],
     linkEdital: "/pdfs/florestopolis-2026.pdf",
     siteOficial: "https://www.gamaconsult.com.br",
+    // Isenção da taxa (item 4.10 do edital, Lei Municipal nº 1.478/2018)
+    isencao: {
+      inicio: "2026-10-21",
+      fim: "2026-10-23",
+      resultado: "2026-11-03",
+      ondePedir: "Requerimento no site da GAMA, com os documentos anexados",
+      quemTem: [
+        {
+          titulo: "Mesário ou ajudante da Justiça Eleitoral",
+          comoComprovar:
+            "Ter trabalhado em pelo menos 2 eleições na 65ª Zona Eleitoral (Porecatu/PR). Declaração ou diploma da Justiça Eleitoral.",
+        },
+        {
+          titulo: "Doador de medula óssea",
+          comoComprovar: "Documento de órgão oficial que comprove a doação.",
+        },
+        {
+          titulo: "Doador regular de sangue",
+          comoComprovar: "Pelo menos 3 doações por ano, comprovadas por órgão oficial.",
+        },
+      ],
+    },
     etapas: [
       "Prova objetiva",
       "Avaliação de títulos (nível superior)",
@@ -43,6 +67,7 @@ export const editaisIniciais = [
     cronograma: [
       { data: "2026-10-14", evento: "Publicação do edital" },
       { data: "2026-10-21", fim: "2026-11-10", evento: "Inscrições" },
+      { data: "2026-10-21", fim: "2026-10-23", evento: "Pedido de isenção da taxa" },
       { data: "2026-11-11", evento: "Último dia para pagar a taxa" },
       { data: "2026-11-23", evento: "Divulgação dos locais de prova" },
       { data: "2026-11-29", evento: "Prova objetiva" },
@@ -236,6 +261,24 @@ export const editaisIniciais = [
     locais: ["Pires do Rio/GO"],
     linkEdital: "/pdfs/pires-do-rio-2026.pdf",
     siteOficial: "https://www.institutoverbena.ufg.br",
+    // Isenção da taxa (item 2.2 do edital, Lei Federal nº 13.656/2018)
+    isencao: {
+      inicio: "2026-10-19",
+      fim: "2026-10-21",
+      resultado: "2026-11-04",
+      ondePedir: "Portal do candidato no site do Instituto Verbena/UFG",
+      quemTem: [
+        {
+          titulo: "Família no CadÚnico (baixa renda)",
+          comoComprovar: "Renda por pessoa de até meio salário mínimo. Informar o NIS no pedido.",
+        },
+        {
+          titulo: "Doador de medula óssea",
+          comoComprovar:
+            "Enviar documento da unidade coletora com a data da doação e a inscrição no REDOME. Só o cadastro no REDOME não vale.",
+        },
+      ],
+    },
     etapas: [
       "Prova objetiva",
       "Prova discursiva (nível superior)",
@@ -244,6 +287,7 @@ export const editaisIniciais = [
     cronograma: [
       { data: "2026-09-02", evento: "Publicação do edital" },
       { data: "2026-10-19", fim: "2026-11-18", evento: "Inscrições" },
+      { data: "2026-10-19", fim: "2026-10-21", evento: "Pedido de isenção da taxa" },
       { data: "2026-12-07", evento: "Inscrições homologadas" },
       { data: "2027-01-12", evento: "Divulgação dos locais de prova" },
       { data: "2027-01-17", evento: "Provas objetiva e discursiva" },
@@ -353,10 +397,29 @@ export const editaisIniciais = [
     locais: ["São Paulo/SP (e cidades vizinhas, se precisar)"],
     linkEdital: "/pdfs/ifsp-2024.pdf",
     siteOficial: "https://concursopublico.ifsp.edu.br",
+    // Isenção da taxa (item 10 do edital, Lei Federal nº 13.656/2018)
+    isencao: {
+      inicio: "2024-07-18",
+      fim: "2024-07-25",
+      resultado: "2024-08-05",
+      ondePedir: "No próprio formulário de inscrição, no site do concurso",
+      quemTem: [
+        {
+          titulo: "Família no CadÚnico (baixa renda)",
+          comoComprovar:
+            "Renda por pessoa de até meio salário mínimo. Informar o NIS no formulário.",
+        },
+        {
+          titulo: "Doador de medula óssea",
+          comoComprovar: "Anexar o comprovante de inscrição no REDOME.",
+        },
+      ],
+    },
     etapas: ["Prova objetiva", "Prova de desempenho didático (aula)", "Prova de títulos"],
     cronograma: [
       { data: "2024-07-10", evento: "Publicação do edital" },
       { data: "2024-07-18", fim: "2024-09-02", evento: "Inscrições" },
+      { data: "2024-07-18", fim: "2024-07-25", evento: "Pedido de isenção da taxa" },
       { data: "2024-09-04", evento: "Último dia para pagar a taxa" },
       { data: "2024-09-30", evento: "Divulgação dos locais de prova" },
       { data: "2024-10-13", evento: "Prova objetiva" },

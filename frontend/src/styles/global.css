@@ -958,13 +958,25 @@ a.btn-sec {
   margin: var(--espaco-4) 0;
 }
 
-/* Cards do resumo: quantos couberem por linha, cada um com no mínimo 260px
-   (em tela de computador ficam 3 por linha; no celular, 1) */
+/* Cards do resumo: sempre 3 por linha no computador. Como são 6 cards, ficam 2 linhas
+   cheias, sem buraco no fim. Em telas menores, 2 por linha e depois 1 (ver @media abaixo). */
 .resumo {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--espaco-3);
   margin: 0 0 var(--espaco-4);
+}
+
+@media (max-width: 900px) {
+  .resumo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .resumo {
+    grid-template-columns: 1fr;
+  }
 }
 
 .resumo-card {
@@ -995,17 +1007,30 @@ a.btn-sec {
   color: var(--cor-texto-secundario);
 }
 
-/* Duas colunas (linha do tempo e matérias). Com pouco espaço vira uma coluna só.
-   min(340px, 100%) = no máximo a largura da tela, para não vazar no celular. */
-.dash-colunas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
-  gap: var(--espaco-3);
-  margin-bottom: var(--espaco-3);
+/* Caixa "Qual cargo te interessa?" no topo: borda na cor de ação para chamar atenção */
+.seletor-cargo {
+  border-color: var(--cor-acao);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espaco-2) var(--espaco-5);
 }
 
-.dash-colunas .card {
+.seletor-cargo .campo {
+  flex: 1 1 280px;
+  max-width: 480px;
   margin: 0;
+}
+
+.seletor-cargo label {
+  font-family: var(--fonte-titulo);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.seletor-cargo p {
+  flex: 1 1 220px;
+  margin: 0 0 var(--espaco-2);
 }
 
 .dash-titulo {
@@ -1020,27 +1045,63 @@ a.btn-sec {
   margin: var(--espaco-4) 0 var(--espaco-2);
 }
 
-/* Linha do tempo: uma linha vertical com uma bolinha em cada etapa */
+/* Linha do tempo na HORIZONTAL: as etapas ficam lado a lado.
+   Usamos flex com "wrap": se não couberem numa linha, continuam na de baixo.
+   O "flex: 1 1 170px" de cada etapa faz elas crescerem para ocupar a linha toda,
+   então a última linha também fica cheia, sem buraco no fim. */
 .linha-tempo {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--espaco-5);
 }
 
+/* Cada etapa: bolinha em cima, data e nome embaixo (no mínimo 170px de largura) */
 .etapa {
   position: relative;
-  padding: 0 0 var(--espaco-4) 36px; /* espaço à esquerda para a bolinha */
+  flex: 1 1 170px;
+  padding: 36px var(--espaco-3) 0 0; /* espaço em cima para a bolinha */
 }
 
-/* Traço vertical que liga uma bolinha na outra (a última etapa não tem) */
+/* Traço horizontal que sai da bolinha e vai até a próxima etapa (a última não tem) */
 .etapa:not(:last-child)::before {
   content: "";
   position: absolute;
-  left: 11px;
-  top: 24px;
-  bottom: 0;
-  width: 2px;
+  top: 11px;
+  left: 24px;
+  right: 0;
+  height: 2px;
   background: var(--cor-borda);
+}
+
+/* Na linha do tempo, os selos ("Próxima", "Acontecendo agora") vão para a linha de baixo */
+.linha-tempo .etapa-selo {
+  display: table;
+  margin: var(--espaco-1) 0 0;
+}
+
+/* No celular a linha do tempo volta a ser vertical: bolinha à esquerda, traço para baixo */
+@media (max-width: 560px) {
+  .linha-tempo {
+    flex-direction: column;
+    row-gap: 0;
+  }
+
+  .etapa {
+    flex: none;
+    padding: 0 0 var(--espaco-4) 36px;
+  }
+
+  .etapa:not(:last-child)::before {
+    top: 24px;
+    left: 11px;
+    right: auto;
+    bottom: 0;
+    width: 2px;
+    height: auto;
+  }
 }
 
 .etapa-bolinha {
@@ -1103,9 +1164,20 @@ a.btn-sec {
   color: var(--cor-primaria);
 }
 
-/* Gráfico de barras das matérias */
-.grafico-escolha {
-  max-width: 360px;
+/* Gráfico de barras das matérias.
+   Sem cargo escolhido aparecem várias provas, uma embaixo da outra, com espaço entre elas. */
+.grafico-provas {
+  display: grid;
+  gap: var(--espaco-5);
+}
+
+.grafico-provas .dash-subtitulo,
+.secao-conteudo > div > .dash-subtitulo:first-child {
+  margin-top: 0;
+}
+
+.grafico-cargos {
+  margin: 0 0 var(--espaco-2);
 }
 
 .grafico {
@@ -1186,12 +1258,39 @@ a.btn-sec {
   color: var(--cor-texto-secundario);
 }
 
-/* Etapas do concurso e lista de áreas */
+/* Etapas do concurso: passos lado a lado que dividem a largura toda.
+   auto-fit estica as caixas para ocupar a linha inteira (3 etapas = 3 colunas iguais). */
 .etapas-lista {
+  list-style: none; /* o número vem do <span class="etapa-numero"> */
   margin: 0;
-  padding-left: var(--espaco-5);
+  padding: 0;
   display: grid;
-  gap: var(--espaco-1);
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--espaco-3);
+}
+
+.etapa-passo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3);
+  border-radius: var(--raio-md);
+  background: var(--cor-primaria-suave);
+  font-weight: 600;
+}
+
+/* Bolinha com o número do passo */
+.etapa-numero {
+  flex-shrink: 0; /* não deixa a bolinha amassar quando o texto é grande */
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--cor-primaria);
+  color: var(--cor-sobre-primaria);
+  font-family: var(--fonte-titulo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chips-lista {
@@ -1261,7 +1360,60 @@ a.btn-sec {
   margin-top: var(--espaco-4);
 }
 
-/* Na grade de duas colunas, um card fechado não estica para a altura do outro */
-.dash-colunas {
-  align-items: start;
+/* Linha da tabela do cargo escolhido no topo da página */
+.tabela tbody tr.linha-escolhida {
+  background: #fdf1d8;
+  box-shadow: inset 4px 0 0 var(--cor-acao); /* faixa amarela na esquerda da linha */
+}
+
+/* ============================================================
+   Isenção da taxa (Isencao.jsx)
+   ============================================================ */
+
+/* Selo da situação do prazo + frase ao lado */
+.isencao-prazo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin-top: 0;
+  font-weight: 600;
+}
+
+/* Cartões de "quem pode pedir": no mínimo 240px cada. auto-fit (e não auto-fill)
+   estica os cartões para ocupar a linha toda, sem sobrar coluna vazia no fim. */
+.isencao-lista {
+  list-style: none;
+  margin: 0 0 var(--espaco-4);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--espaco-3);
+}
+
+.isencao-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  padding: var(--espaco-3);
+  border-radius: var(--raio-md);
+  background: var(--cor-primaria-suave);
+}
+
+/* Onde pedir, resultado e "se for negado", lado a lado e ocupando a linha toda */
+.isencao-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--espaco-3);
+  margin: 0 0 var(--espaco-3);
+}
+
+.isencao-info dt {
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+}
+
+.isencao-info dd {
+  margin: 0;
+  font-weight: 600;
 }

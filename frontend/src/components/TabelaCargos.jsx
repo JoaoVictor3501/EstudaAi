@@ -4,9 +4,10 @@ import { formatarDinheiro } from "../data/editais";
 // Mostra nível, vagas, salário, carga horária e taxa de cada cargo.
 //
 // Props:
-//   cargos -> lista de { nome, nivel, vagas, salario, carga, taxa, observacao (opcional) }
+//   cargos      -> lista de { nome, nivel, vagas, salario, carga, taxa, observacao (opcional) }
+//   escolhido   -> nome do cargo escolhido no topo da página ("" = nenhum); a linha dele fica em destaque
 
-export default function TabelaCargos({ cargos }) {
+export default function TabelaCargos({ cargos, escolhido }) {
   return (
     // A div deixa a tabela rolar para o lado no celular, em vez de quebrar a tela.
     // tabIndex={0} deixa quem usa teclado focar a área e rolar com as setas.
@@ -25,8 +26,13 @@ export default function TabelaCargos({ cargos }) {
         </thead>
         <tbody>
           {cargos.map((c) => (
-            <tr key={c.nome}>
-              <th scope="row">{c.nome}</th>
+            // A linha do cargo escolhido ganha a classe "linha-escolhida" (fundo destacado)
+            <tr key={c.nome} className={c.nome === escolhido ? "linha-escolhida" : ""}>
+              <th scope="row">
+                {c.nome}
+                {/* Texto escrito além da cor, para quem não enxerga a diferença de cor */}
+                {c.nome === escolhido && <span className="tabela-obs">Cargo escolhido</span>}
+              </th>
               <td>{c.nivel}</td>
               {/* vagas = 0 quer dizer que o cargo não tem vaga imediata, só cadastro reserva
                   (lista de aprovados chamados se abrir vaga depois) */}
