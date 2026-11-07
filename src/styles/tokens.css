@@ -1,0 +1,88 @@
+/* EstudaAí - tokens de design (Paleta C: Índigo e lavanda)
+   Todos os pares de texto/fundo abaixo passam em 4,5:1 (WCAG AA). */
+
+:root {
+  /* Fundos e superfícies */
+  --cor-fundo: #f8f7fd;
+  --cor-superficie: #ffffff;
+  --cor-borda: #e0ddf1;
+  /* "Folha" clara por cima dos planos de fundo com imagem: deixa o texto legível
+     e ainda deixa o fundo aparecer um pouco (0.9 = 90% opaca). */
+  --cor-folha: rgba(248, 247, 253, 0.9);
+
+  /* Marca */
+  --cor-primaria: #4b3fa0; /* sobre branco: 8,3:1 */
+  --cor-sobre-primaria: #ffffff;
+  --cor-primaria-suave: #ece9fa; /* chips neutros, cabeçalhos de disciplina */
+
+  /* Texto */
+  --cor-texto: #2a2362;
+  --cor-texto-secundario: #55536b;
+
+  /* Ação principal (botões) */
+  --cor-acao: #f2b134;
+  --cor-sobre-acao: #2a2362; /* sobre a ação: 7,3:1 */
+
+  /* Estados */
+  --cor-sucesso: #2e7d5b;
+  --cor-sucesso-fundo: #e3f1ea;
+  --cor-sucesso-texto: #1f5c42;
+
+  --cor-erro: #b3392b;
+  --cor-erro-fundo: #f8e4e1;
+  --cor-erro-texto: #8e2a1f;
+
+  /* Tipografia (fontes carregadas do Google Fonts no index.html).
+     Se a fonte não carregar, o navegador usa a próxima da lista. */
+  --fonte-titulo:
+    "Fredoka", "Nunito Sans", system-ui, sans-serif; /* logotipo, títulos e destaques */
+  --fonte-texto: "Nunito Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif; /* resto */
+
+  /* Forma e espaçamento */
+  --raio-sm: 8px;
+  --raio-md: 12px;
+  --raio-pill: 999px;
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-5: 24px;
+}
+
+/* Base */
+body {
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+/* Exemplos de uso */
+.btn-acao {
+  background: var(--cor-acao);
+  color: var(--cor-sobre-acao);
+  border: 0;
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-4);
+  font-weight: 500;
+}
+
+.card {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-3);
+}
+
+.chip-ok {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso-texto);
+}
+.chip-erro {
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+}
+
+/* Foco visível para teclado (RNF03) */
+:focus-visible {
+  outline: 3px solid var(--cor-primaria);
+  outline-offset: 2px;
+}

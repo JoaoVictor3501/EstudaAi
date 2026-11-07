@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# EstudaAí - Front-end
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Front-end do EstudaAí (React + Vite + React Router), com as telas dos requisitos essenciais da Atividade 3.1: RF01, RF02, RF09 e RF12.
 
-## Available Scripts
+Por enquanto os dados são de exemplo (sem back-end). As trocas para a API estão marcadas com comentários `Depois:` nos arquivos de `src/context`.
 
-In the project directory, you can run:
+## Como rodar
 
-### `npm start`
+```bash
+npm install
+npm run dev
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Abra o endereço mostrado no terminal (normalmente http://localhost:5173).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Contas de teste
 
-### `npm test`
+| Perfil        | E-mail             | Senha  |
+| ------------- | ------------------ | ------ |
+| Concurseiro   | aluno@estudaai.com | 123456 |
+| Administrador | admin@estudaai.com | 123456 |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Ao criar uma conta nova, e-mails que começam com `admin` entram como administrador (regra provisória até o back-end existir).
 
-### `npm run build`
+## Telas
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Rota                  | Tela                                                  | Requisito   | Incremento |
+| --------------------- | ----------------------------------------------------- | ----------- | ---------- |
+| `/login`              | Login                                                 | RF01        | 1          |
+| `/cadastro`           | Criar conta                                           | RF01        | 1          |
+| `/admin/editais/novo` | Cadastro de edital por disciplina e tópico (só admin) | RF02        | 2          |
+| `/editais`            | Busca com termo, categoria e filtros avançados        | RF09        | 3          |
+| `/editais/:id`        | Edital com disciplinas, tópicos e materiais           | RF02 e RF12 | 2 e 4      |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Estrutura
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+src/
+  main.jsx            entrada e provedores
+  App.jsx             rotas e proteção de telas
+  assets/             logo do EstudaAí e ícones (assets/icones)
+  components/         MenuLateral (navegação e sair), LayoutAuth (molde de login/cadastro), PainelFiltros (filtros da busca), Icone, Campo (formulário com erro), Chip
+  context/            AuthContext (login simulado), EditaisContext (lista em memória)
+  data/editais.js     dados de exemplo
+  pages/              Login, Cadastro, Busca, EditalDetalhe, NovoEdital
+  styles/             tokens.css (paleta C) e global.css
+```
 
-### `npm run eject`
+## O que trocar quando o back-end estiver pronto
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. `AuthContext.jsx`: `login` e `cadastrar` passam a chamar `POST /api/auth/login` e `POST /api/auth/register` e guardar o token JWT.
+2. `EditaisContext.jsx`: carregar os editais com `GET /api/editais` e salvar com `POST /api/editais`.
+3. `data/editais.js`: pode ser removido (restam só as listas de categorias e níveis).
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Qualidade de código e hospedagem
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- `npm run lint`: confere o código com o ESLint.
+- `npm run format`: padroniza o formato com o Prettier.
+- `vercel.json`: faz as rotas do React Router funcionarem ao abrir um endereço direto na Vercel (sem erro 404).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Acessibilidade e usabilidade (RNF01 e RNF03)
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Contraste mínimo de 4,5:1 em todos os textos (paleta C).
+- Campos com rótulo, mensagem de erro específica e `aria-invalid`.
+- Foco visível no teclado e botões com texto, sem depender só de cor.
+- Layout responsivo até telas de celular.
