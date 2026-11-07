@@ -1,2 +1,5 @@
 node_modules
 dist
+
+# Cache de ferramentas do editor (não faz parte do projeto)
+.impeccable

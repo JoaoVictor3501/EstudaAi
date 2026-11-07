@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useEditais } from "../context/EditaisContext";
-import { tipoChipStatus, formatarData } from "../data/editais";
+import { tipoChipStatus, formatarData, textoTaxa } from "../data/editais";
 import Chip from "../components/Chip";
 import Icone from "../components/Icone";
 import PainelFiltros from "../components/PainelFiltros";
@@ -57,10 +57,12 @@ export default function Busca() {
   const filtrosAtivos = Object.values(filtros).filter((v) => v !== "").length;
 
   // Filtra a lista: o edital precisa conter o texto digitado no título,
-  // órgão ou banca e passar nos filtros avançados.
+  // órgão, banca ou no nome de algum cargo, e passar nos filtros avançados.
   const t = termo.trim().toLowerCase();
   const resultados = editais.filter((e) => {
-    const texto = `${e.titulo} ${e.orgao} ${e.banca}`.toLowerCase();
+    // Junta os nomes dos cargos num texto só (editais sem cargos ficam com texto vazio).
+    const cargos = (e.cargos || []).map((c) => c.nome).join(" ");
+    const texto = `${e.titulo} ${e.orgao} ${e.banca} ${cargos}`.toLowerCase();
     return texto.includes(t) && passaNosFiltros(e, filtros);
   });
 
@@ -133,10 +135,26 @@ export default function Busca() {
                   <span className="texto-sec">
                     {e.orgao} · {e.nivel} · {e.ano}
                   </span>
-                  <span className="texto-sec">
-                    Inscrição: {formatarData(e.inscricaoInicio)} a {formatarData(e.inscricaoFim)}
-                  </span>
-                  <span className="texto-sec">Prova: {formatarData(e.dataProva)}</span>
+
+                  {/* Resumo rápido antes de abrir o edital: inscrição, taxa e local da prova.
+                      <dl> é a lista de "nome: valor" do HTML (dt = nome, dd = valor). */}
+                  <dl className="card-resumo">
+                    <div>
+                      <dt>Inscrição</dt>
+                      <dd>
+                        {formatarData(e.inscricaoInicio)} a {formatarData(e.inscricaoFim)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Taxa</dt>
+                      <dd>{textoTaxa(e)}</dd>
+                    </div>
+                    <div>
+                      <dt>Local da prova</dt>
+                      {/* join junta as cidades em um texto só, separadas por vírgula */}
+                      <dd>{e.locais ? e.locais.join(", ") : "Não informado"}</dd>
+                    </div>
+                  </dl>
                 </div>
                 <Chip tipo={tipoChipStatus(e.status)}>{e.status}</Chip>
               </Link>
