@@ -417,12 +417,6 @@ a {
   text-align: center;
 }
 
-.dica {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--cor-texto-secundario);
-}
-
 .voltar {
   display: inline-block;
   margin-bottom: var(--espaco-3);
@@ -893,4 +887,381 @@ button {
     flex-direction: column;
     gap: 0;
   }
+}
+
+/* ============================================================
+   Card do edital na lista (Busca.jsx): resumo de inscrição, taxa e local
+   ============================================================ */
+.card-resumo {
+  margin: var(--espaco-3) 0 0;
+  display: grid;
+  gap: var(--espaco-2);
+}
+
+.card-resumo dt {
+  font-size: 0.8rem;
+  color: var(--cor-texto-secundario);
+}
+
+.card-resumo dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ============================================================
+   Dashboard do edital (EditalDetalhe.jsx)
+   ============================================================ */
+
+/* Topo: título à esquerda e botão do edital à direita.
+   flex-wrap deixa o botão descer para baixo do título em telas pequenas. */
+.dash-topo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--espaco-4);
+}
+
+.dash-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+/* Botão do edital completo: maior que os outros, para ficar bem à mostra */
+.btn-edital {
+  font-size: 1.05rem;
+  padding: var(--espaco-3) var(--espaco-5);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Links com cara de botão (o <a> não vem com esse visual por padrão) */
+a.btn-acao,
+a.btn-sec {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Faixa de aviso do prazo (amarelo claro, mesma cor do selo "Previsto") */
+.aviso-prazo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  background: #fdf1d8;
+  color: #6b4a00;
+  border-radius: var(--raio-md);
+  padding: var(--espaco-3) var(--espaco-4);
+  font-weight: 600;
+  margin: var(--espaco-4) 0;
+}
+
+/* Cards do resumo: quantos couberem por linha, cada um com no mínimo 260px
+   (em tela de computador ficam 3 por linha; no celular, 1) */
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: var(--espaco-3);
+  margin: 0 0 var(--espaco-4);
+}
+
+.resumo-card {
+  margin: 0;
+}
+
+.resumo-card dt {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+}
+
+.resumo-card dd {
+  margin: var(--espaco-2) 0 0;
+  font-family: var(--fonte-titulo);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.resumo-detalhe {
+  display: block;
+  font-family: var(--fonte-texto);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--cor-texto-secundario);
+}
+
+/* Duas colunas (linha do tempo e matérias). Com pouco espaço vira uma coluna só.
+   min(340px, 100%) = no máximo a largura da tela, para não vazar no celular. */
+.dash-colunas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: var(--espaco-3);
+  margin-bottom: var(--espaco-3);
+}
+
+.dash-colunas .card {
+  margin: 0;
+}
+
+.dash-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin-top: 0;
+}
+
+.dash-subtitulo {
+  font-size: 1rem;
+  margin: var(--espaco-4) 0 var(--espaco-2);
+}
+
+/* Linha do tempo: uma linha vertical com uma bolinha em cada etapa */
+.linha-tempo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.etapa {
+  position: relative;
+  padding: 0 0 var(--espaco-4) 36px; /* espaço à esquerda para a bolinha */
+}
+
+/* Traço vertical que liga uma bolinha na outra (a última etapa não tem) */
+.etapa:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: 0;
+  width: 2px;
+  background: var(--cor-borda);
+}
+
+.etapa-bolinha {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--cor-primaria);
+  background: var(--cor-superficie);
+  color: var(--cor-sobre-primaria);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Etapa que já passou: bolinha cheia com ✓ e texto mais apagado */
+.etapa-feito .etapa-bolinha {
+  background: var(--cor-primaria);
+}
+
+.etapa-feito .etapa-evento {
+  color: var(--cor-texto-secundario);
+}
+
+/* Etapa acontecendo agora: bolinha amarela (cor de ação) */
+.etapa-agora .etapa-bolinha {
+  background: var(--cor-acao);
+  border-color: var(--cor-acao);
+}
+
+.etapa-data {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+}
+
+.etapa-evento {
+  font-weight: 600;
+}
+
+.etapa-selo {
+  display: inline-block;
+  margin-left: var(--espaco-2);
+  font-size: 0.75rem;
+  padding: 1px var(--espaco-2);
+  border-radius: var(--raio-pill);
+  vertical-align: middle;
+}
+
+.selo-agora {
+  background: #fdf1d8;
+  color: #6b4a00;
+}
+
+.selo-proxima {
+  background: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+}
+
+/* Gráfico de barras das matérias */
+.grafico-escolha {
+  max-width: 360px;
+}
+
+.grafico {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.grafico-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+/* A porcentagem nunca quebra em duas linhas */
+.grafico-linha strong {
+  white-space: nowrap;
+}
+
+.grafico-fundo {
+  height: 14px;
+  margin: var(--espaco-1) 0;
+  background: var(--cor-primaria-suave);
+  border-radius: var(--raio-pill);
+  overflow: hidden;
+}
+
+.grafico-barra {
+  height: 100%;
+  background: var(--cor-primaria);
+  border-radius: var(--raio-pill);
+}
+
+.grafico-detalhe {
+  font-size: 0.85rem;
+}
+
+/* Tabela de cargos */
+.tabela-rolagem {
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px; /* abaixo disso a tabela rola para o lado */
+}
+
+.tabela th,
+.tabela td {
+  text-align: left;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela thead th {
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+  font-weight: 600;
+}
+
+/* Nome do cargo (primeira coluna) */
+.tabela tbody th {
+  font-weight: 600;
+}
+
+/* Linhas alternadas com fundo levemente diferente, para o olho não se perder */
+.tabela tbody tr:nth-child(even) {
+  background: var(--cor-fundo);
+}
+
+.tabela-obs {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--cor-texto-secundario);
+}
+
+/* Etapas do concurso e lista de áreas */
+.etapas-lista {
+  margin: 0;
+  padding-left: var(--espaco-5);
+  display: grid;
+  gap: var(--espaco-1);
+}
+
+.chips-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+/* Chamada final com o botão do edital */
+.dash-final {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-4);
+  border-color: var(--cor-acao);
+}
+
+.dash-final-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
+/* ============================================================
+   Cards que abrem e fecham (Secao.jsx, feito com <details> e <summary>)
+   ============================================================ */
+
+/* Título clicável: nome à esquerda e setinha à direita */
+.secao-cab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  cursor: pointer;
+  list-style: none; /* tira o triângulo padrão do navegador */
+}
+
+/* Tira o triângulo padrão no Chrome e no Safari */
+.secao-cab::-webkit-details-marker {
+  display: none;
+}
+
+.secao-cab .dash-titulo {
+  margin: 0;
+}
+
+.secao-cab:hover .dash-titulo {
+  color: var(--cor-primaria);
+}
+
+.secao-seta {
+  color: var(--cor-primaria);
+  transition: transform 0.2s;
+}
+
+/* Card aberto: a setinha vira para cima */
+.secao[open] .secao-seta {
+  transform: rotate(180deg);
+}
+
+/* Espaço entre o título e o conteúdo (só aparece com o card aberto) */
+.secao-conteudo {
+  margin-top: var(--espaco-4);
+}
+
+/* Na grade de duas colunas, um card fechado não estica para a altura do outro */
+.dash-colunas {
+  align-items: start;
 }

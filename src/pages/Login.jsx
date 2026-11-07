@@ -89,7 +89,6 @@ export default function Login() {
       <p className="texto-sec centro">
         Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
       </p>
-      <p className="dica">Para testar: aluno@estudaai.com ou admin@estudaai.com, senha 123456.</p>
     </LayoutAuth>
   );
 }
