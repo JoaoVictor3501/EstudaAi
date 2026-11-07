@@ -4,6 +4,8 @@ Plataforma que deixa os editais de concursos públicos mais fáceis de entender:
 um PDF enorme, a pessoa vê um resumo visual com datas, vagas, salários, taxa, local da prova
 e as matérias que mais valem na nota.
 
+**Site no ar:** https://estudaai-ifpr.vercel.app
+
 ## Organização do repositório
 
 Tudo fica na branch `main`, com o front-end e o back-end em pastas separadas:
