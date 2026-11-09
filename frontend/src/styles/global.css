@@ -245,28 +245,40 @@ a {
   box-shadow: 0 8px 24px rgba(42, 35, 98, 0.06);
 }
 
-/* Novo edital: duas colunas lado a lado (dados do edital | disciplinas e tópicos).
-   Com menos de 1100px de largura vira uma coluna só (ver @media logo abaixo). */
-.novo-edital-grade {
+/* Formulário de edital: campos lado a lado em grade.
+   grade-2, grade-3 e grade-4 = quantos campos por linha no computador.
+   Em telas menores diminui (ver @media logo abaixo) até ficar um embaixo do outro. */
+.grade-2,
+.grade-3,
+.grade-4 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 32px;
-  align-items: start; /* cada coluna fica do tamanho do próprio conteúdo */
+  gap: 0 var(--espaco-3);
 }
 
-/* O título de cada coluna começa sem espaço em cima, para as duas ficarem alinhadas */
-.novo-edital-grade h2 {
-  margin-top: 0;
+.grade-2 {
+  grid-template-columns: repeat(2, 1fr);
 }
 
-@media (max-width: 1100px) {
-  .novo-edital-grade {
-    grid-template-columns: 1fr;
+.grade-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grade-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 900px) {
+  .grade-3,
+  .grade-4 {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
 
-  /* Uma embaixo da outra, o título "Disciplinas e tópicos" volta a ter espaço em cima */
-  .novo-edital-grade section + section h2 {
-    margin-top: var(--espaco-5);
+@media (max-width: 560px) {
+  .grade-2,
+  .grade-3,
+  .grade-4 {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1416,4 +1428,125 @@ a.btn-sec {
 .isencao-info dd {
   margin: 0;
   font-weight: 600;
+}
+
+/* Gerenciar editais (admin) */
+.gerenciar-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
+/* Link com cara de botão (Novo edital, Editar) */
+a.btn-acao,
+a.btn-sec {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Editar e Remover lado a lado */
+.tabela-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  margin-top: var(--espaco-2);
+}
+
+/* Botão de ação perigosa (remover): vermelho com texto, não só cor */
+.btn-perigo {
+  background: transparent;
+  color: var(--cor-erro-texto);
+  border: 1px solid var(--cor-erro);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  min-height: 36px;
+  font-weight: 500;
+}
+
+.btn-perigo:hover {
+  background: var(--cor-erro-fundo);
+}
+
+/* Aviso verde depois de remover um edital */
+.aviso-sucesso {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso-texto);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-3) var(--espaco-4);
+  font-weight: 600;
+}
+
+/* Formulário completo do edital (NovoEdital.jsx) */
+textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  resize: vertical;
+}
+
+.campo-dica {
+  font-size: 0.8rem;
+  margin: var(--espaco-1) 0 0;
+}
+
+/* Listas editáveis (ListaCampos.jsx): cada item é uma caixa com os campos em grade */
+.lista-campos {
+  list-style: none;
+  margin: 0 0 var(--espaco-3);
+  padding: 0;
+}
+
+.lista-campos-item {
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-3);
+  margin-bottom: var(--espaco-2);
+}
+
+/* Quantos campos couberem por linha (mínimo 170px cada); no celular, um por linha */
+.lista-campos-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0 var(--espaco-3);
+}
+
+.lista-campos-grade .campo {
+  margin-bottom: var(--espaco-2);
+}
+
+/* Campo de texto longo ocupa a linha inteira */
+.lista-campos-grade .campo-largo {
+  grid-column: 1 / -1;
+}
+
+/* Cada prova com suas matérias */
+.bloco-prova {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-3);
+  margin-bottom: var(--espaco-3);
+}
+
+/* Caixa de marcar com o texto ao lado */
+.caixa-marcar {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin-bottom: var(--espaco-3);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.caixa-marcar input {
+  width: 20px;
+  min-height: 20px;
+  height: 20px;
 }

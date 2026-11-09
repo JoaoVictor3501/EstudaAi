@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEditais } from "../context/EditaisContext";
+import { useAuth } from "../context/AuthContext";
 import Chip from "../components/Chip";
 import Icone from "../components/Icone";
 import LinhaDoTempo from "../components/LinhaDoTempo";
@@ -68,8 +69,18 @@ function CardResumo({ icone, rotulo, valor, detalhe }) {
 // cadastrados na tela "Novo edital".
 export default function EditalDetalhe() {
   const { id } = useParams();
-  const { editais } = useEditais();
+  const { editais, removerEdital } = useEditais();
+  const { usuario } = useAuth();
+  const navigate = useNavigate();
   const edital = editais.find((e) => e.id === Number(id));
+
+  // Admin: remove o edital (com confirmação) e volta para a tela de gerenciar.
+  function aoRemover() {
+    if (!window.confirm(`Remover o edital "${edital.titulo}"?\nEssa ação não pode ser desfeita.`))
+      return;
+    removerEdital(edital.id);
+    navigate("/admin/editais");
+  }
   const [abertas, setAbertas] = useState({}); // disciplinas abertas
   const [topicoAberto, setTopicoAberto] = useState(null); // "disciplina/topico"
   // Nome do cargo escolhido no topo da página ("" = todos os cargos).
@@ -129,6 +140,17 @@ export default function EditalDetalhe() {
             <Chip>{edital.categoria}</Chip>
             <Chip>{edital.nivel}</Chip>
           </p>
+          {/* Só o administrador vê os botões de alterar e remover */}
+          {usuario.admin && (
+            <div className="tabela-acoes">
+              <Link to={`/admin/editais/${edital.id}/editar`} className="btn-sec">
+                Editar edital
+              </Link>
+              <button type="button" className="btn-perigo" onClick={aoRemover}>
+                Remover edital
+              </button>
+            </div>
+          )}
         </div>
 
         {/* target="_blank" abre o PDF em outra aba; rel="noopener" é por segurança */}

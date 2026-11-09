@@ -28,7 +28,9 @@ Ao criar uma conta nova, e-mails que começam com `admin` entram como administra
 | --------------------- | ----------------------------------------------------- | ----------- | ---------- |
 | `/login`              | Login                                                 | RF01        | 1          |
 | `/cadastro`           | Criar conta                                           | RF01        | 1          |
-| `/admin/editais/novo` | Cadastro de edital por disciplina e tópico (só admin) | RF02        | 2          |
+| `/admin/editais`      | Gerenciar editais: lista com Editar e Remover (só admin) | RF02     | 2          |
+| `/admin/editais/novo` | Cadastro de edital completo: dados, links, locais, isenção, provas e matérias, cargos, cronograma, etapas, disciplinas e tópicos (só admin) | RF02 | 2 |
+| `/admin/editais/:id/editar` | Alteração de edital (mesma tela do cadastro, já preenchida; só admin) | RF02 | 2 |
 | `/editais`            | Busca com termo, categoria e filtros avançados        | RF09        | 3          |
 | `/editais/:id`        | Edital com disciplinas, tópicos e materiais           | RF02 e RF12 | 2 e 4      |
 
@@ -39,17 +41,17 @@ src/
   main.jsx            entrada e provedores
   App.jsx             rotas e proteção de telas
   assets/             logo do EstudaAí e ícones (assets/icones)
-  components/         MenuLateral (navegação e sair), LayoutAuth (molde de login/cadastro), PainelFiltros (filtros da busca), Icone, Campo (formulário com erro), Chip
+  components/         MenuLateral (navegação e sair), ListaCampos (lista editável do formulário de edital), FormProvas (provas e matérias), LayoutAuth (molde de login/cadastro), PainelFiltros (filtros da busca), Icone, Campo (formulário com erro), Chip
   context/            AuthContext (login simulado), EditaisContext (lista em memória)
   data/editais.js     dados de exemplo
-  pages/              Login, Cadastro, Busca, EditalDetalhe, NovoEdital
+  pages/              Login, Cadastro, Busca, EditalDetalhe, NovoEdital (criar e alterar), GerenciarEditais
   styles/             tokens.css (paleta C) e global.css
 ```
 
 ## O que trocar quando o back-end estiver pronto
 
 1. `AuthContext.jsx`: `login` e `cadastrar` passam a chamar `POST /api/auth/login` e `POST /api/auth/register` e guardar o token JWT.
-2. `EditaisContext.jsx`: carregar os editais com `GET /api/editais` e salvar com `POST /api/editais`.
+2. `EditaisContext.jsx`: carregar os editais com `GET /api/editais`, criar com `POST /api/editais`, alterar com `PUT /api/editais/:id` e remover com `DELETE /api/editais/:id`.
 3. `data/editais.js`: pode ser removido (restam só as listas de categorias e níveis).
 
 ## Qualidade de código e hospedagem

@@ -6,6 +6,7 @@ import Cadastro from "./pages/Cadastro";
 import Busca from "./pages/Busca";
 import EditalDetalhe from "./pages/EditalDetalhe";
 import NovoEdital from "./pages/NovoEdital";
+import GerenciarEditais from "./pages/GerenciarEditais";
 
 // "Protegida" é uma tela que exige login (e admin, quando somenteAdmin for verdadeiro).
 // Sem permissão, o usuário é redirecionado.
@@ -46,7 +47,24 @@ export default function App() {
             }
           />
           <Route
+            path="/admin/editais"
+            element={
+              <Protegida somenteAdmin>
+                <GerenciarEditais />
+              </Protegida>
+            }
+          />
+          <Route
             path="/admin/editais/novo"
+            element={
+              <Protegida somenteAdmin>
+                <NovoEdital />
+              </Protegida>
+            }
+          />
+          {/* A mesma tela do "Novo edital", mas já preenchida com o edital escolhido */}
+          <Route
+            path="/admin/editais/:id/editar"
             element={
               <Protegida somenteAdmin>
                 <NovoEdital />

@@ -6,8 +6,17 @@ import Icone from "./Icone";
 
 // Itens do menu. Para criar uma tela nova no menu, basta acrescentar um objeto aqui.
 // "somenteAdmin: true" esconde o item de quem não é administrador.
+// "exato: true" só marca o item como ativo na rota exata (senão "Gerenciar editais"
+// também ficaria ativo dentro de /admin/editais/novo).
 const itens = [
   { rota: "/editais", texto: "Editais", icone: "disciplinas" },
+  {
+    rota: "/admin/editais",
+    texto: "Gerenciar editais",
+    icone: "configuracoes",
+    somenteAdmin: true,
+    exato: true,
+  },
   { rota: "/admin/editais/novo", texto: "Novo edital", icone: "simulados", somenteAdmin: true },
 ];
 
@@ -62,7 +71,12 @@ export default function MenuLateral() {
           <ul className="menu-lista">
             {itensVisiveis.map((item) => (
               <li key={item.rota}>
-                <NavLink to={item.rota} className="menu-item" onClick={() => setAberto(false)}>
+                <NavLink
+                  to={item.rota}
+                  end={item.exato}
+                  className="menu-item"
+                  onClick={() => setAberto(false)}
+                >
                   <Icone nome={item.icone} tamanho={28} />
                   {item.texto}
                 </NavLink>
