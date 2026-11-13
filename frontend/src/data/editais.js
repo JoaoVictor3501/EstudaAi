@@ -394,7 +394,7 @@ export const editaisIniciais = [
     inscricaoFim: "2024-09-02",
     dataProva: "2024-10-13",
     criadoPor: "Equipe EstudaAí",
-    locais: ["São Paulo/SP (e cidades vizinhas, se precisar)"],
+    locais: ["São Paulo/SP (e cidades vizinhas, se necessário)"],
     linkEdital: "/pdfs/ifsp-2024.pdf",
     siteOficial: "https://concursopublico.ifsp.edu.br",
     // Isenção da taxa (item 10 do edital, Lei Federal nº 13.656/2018)

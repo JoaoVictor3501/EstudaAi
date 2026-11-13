@@ -1430,13 +1430,15 @@ a.btn-sec {
   font-weight: 600;
 }
 
-/* Gerenciar editais (admin) */
+/* Gerenciar editais (admin): título à esquerda e botão "+ Novo edital" à direita,
+   com espaço embaixo para não grudar na busca */
 .gerenciar-topo {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--espaco-3);
+  margin-bottom: var(--espaco-4);
 }
 
 /* Link com cara de botão (Novo edital, Editar) */

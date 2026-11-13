@@ -55,9 +55,10 @@ export default function MenuLateral() {
       </div>
 
       <div id="menu-conteudo" className="menu-conteudo">
-        {/* Quem está logado */}
+        {/* Quem está logado. O ícone tem 52px para ficar da altura das duas linhas de
+            texto ao lado (nome e tipo de conta), já que a imagem tem margem em volta do desenho. */}
         <div className="menu-usuario">
-          <Icone nome="perfil" tamanho={40} />
+          <Icone nome="perfil" tamanho={52} />
           <div>
             <strong>{usuario.nome}</strong>
             <span className="texto-sec">{usuario.admin ? "Administrador" : "Concurseiro"}</span>
