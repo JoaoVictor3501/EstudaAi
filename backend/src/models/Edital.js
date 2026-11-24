@@ -223,9 +223,11 @@ const editalSchema = new mongoose.Schema(
             default:"Federal"
 
         },
+        // "Vários níveis" é para editais com cargos de escolaridades diferentes
+        // (ex.: um concurso com vagas de nível médio e de nível superior)
         nivel:{
             type: String,
-            enum:["Nível fundamental", "Nível médio", "Nível superior"],
+            enum:["Nível fundamental", "Nível médio", "Nível superior", "Vários níveis"],
             default:"Nível médio"
         },
         ano:{

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose")
 const Edital = require("../models/Edital")
 
 // Transforma os erros do Mongoose numa lista de frases simples para o frontend mostrar.
@@ -64,6 +65,9 @@ async function criarEdital(req, res) {
 
         await edital.save()
 
+        // Troca o id de quem criou pelo { _id, nome } da pessoa, para o frontend mostrar o nome
+        await edital.populate("criadoPor", "nome")
+
         // Respondemos com o documento (não com .lean()) para o schema formatar as datas "AAAA-MM-DD"
         return res.status(201).json(edital)
     } catch (error) {
@@ -100,6 +104,7 @@ async function listarEditais(req, res) {
 
         const [editais, total] = await Promise.all([
             Edital.find(filtro)
+                .populate("criadoPor", "nome") // nome de quem criou, no lugar só do id
                 .sort({ createdAt: -1 })
                 .skip((pagina - 1) * limite)
                 .limit(limite),
@@ -113,4 +118,63 @@ async function listarEditais(req, res) {
     }
 }
 
-module.exports = { criarEdital, listarEditais }
+// PUT /api/editais/:id  (só admin)
+// Troca só os campos enviados; os outros continuam como estavam.
+async function atualizarEdital(req, res) {
+    try {
+        // Um id fora do formato do MongoDB nem chega a ser procurado
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(404).json({ message: "Edital não encontrado" })
+        }
+        if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
+            return res.status(400).json({ message: "Envie os dados do edital" })
+        }
+
+        const edital = await Edital.findById(req.params.id)
+        if (!edital) {
+            return res.status(404).json({ message: "Edital não encontrado" })
+        }
+
+        // Os mesmos campos protegidos da criação: quem criou e os dados que o Mongo controla
+        const { criadoPor, _id, id, createdAt, updatedAt, __v, ...dados } = req.body
+        edital.set(dados)
+
+        await edital.validate()
+
+        const erros = regrasCruzadas(edital)
+        if (erros.length > 0) {
+            return res.status(400).json({ message: "Há problemas no edital", erros })
+        }
+
+        await edital.save()
+        await edital.populate("criadoPor", "nome")
+        return res.json(edital)
+    } catch (error) {
+        if (error.name === "ValidationError") {
+            return res.status(400).json({ message: "Há problemas no edital", erros: listarErros(error) })
+        }
+        console.error("Erro ao alterar edital:", error)
+        return res.status(500).json({ message: "Erro no servidor! Tente novamente mais tarde!" })
+    }
+}
+
+// DELETE /api/editais/:id  (só admin)
+async function removerEdital(req, res) {
+    try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(404).json({ message: "Edital não encontrado" })
+        }
+
+        const removido = await Edital.findByIdAndDelete(req.params.id)
+        if (!removido) {
+            return res.status(404).json({ message: "Edital não encontrado" })
+        }
+
+        return res.json({ message: "Edital removido" })
+    } catch (error) {
+        console.error("Erro ao remover edital:", error)
+        return res.status(500).json({ message: "Erro no servidor! Tente novamente mais tarde!" })
+    }
+}
+
+module.exports = { criarEdital, listarEditais, atualizarEdital, removerEdital }
