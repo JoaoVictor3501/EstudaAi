@@ -3,3 +3,6 @@ dist
 
 # Cache de ferramentas do editor (não faz parte do projeto)
 .impeccable
+
+# Configuração local (ex.: VITE_API_URL para testar com a API)
+.env.local

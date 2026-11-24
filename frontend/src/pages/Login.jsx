@@ -13,6 +13,7 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [erros, setErros] = useState({});
   const [erroGeral, setErroGeral] = useState("");
+  const [enviando, setEnviando] = useState(false); // true enquanto espera a resposta do servidor
 
   // Confere os campos e devolve um objeto com as mensagens de erro (vazio se estiver tudo certo).
   function validar() {
@@ -25,7 +26,8 @@ export default function Login() {
   }
 
   // Roda quando o usuário clica em "Entrar".
-  function enviarFormulario(ev) {
+  // É "async" porque o login espera a resposta da API (await).
+  async function enviarFormulario(ev) {
     ev.preventDefault(); // impede a página de recarregar
     const e = validar();
     setErros(e);
@@ -33,7 +35,9 @@ export default function Login() {
     if (Object.keys(e).length > 0) return;
 
     // Tenta entrar; se os dados não baterem, mostra o erro geral.
-    const resultado = login(email.trim(), senha);
+    setEnviando(true);
+    const resultado = await login(email.trim(), senha);
+    setEnviando(false);
     if (!resultado.ok) {
       setErroGeral(resultado.erro);
       return;
@@ -81,8 +85,10 @@ export default function Login() {
             {erroGeral}
           </p>
         )}
-        <button type="submit" className="btn-acao btn-bloco">
-          Entrar
+        {/* Desativado enquanto espera o servidor, para não enviar duas vezes.
+            O servidor gratuito pode levar até 1 minuto para "acordar". */}
+        <button type="submit" className="btn-acao btn-bloco" disabled={enviando}>
+          {enviando ? "Entrando..." : "Entrar"}
         </button>
       </form>
 

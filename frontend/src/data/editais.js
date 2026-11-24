@@ -1,10 +1,10 @@
-// Dados dos editais mostrados no EstudaAí.
+// Editais de exemplo do EstudaAí e funções de formatação usadas pelas telas.
 // Os 3 editais abaixo foram resumidos a partir dos PDFs oficiais (os PDFs ficam em public/pdfs).
+// Eles aparecem quando o site roda sem API (modo de exemplo) e são a base do script
+// scripts/enviarEditais.js, que coloca esses editais no banco.
 //
 // Datas ficam no formato "AAAA-MM-DD" (o mesmo do <input type="date">). Assim dá para
 // comparar datas como texto: "2026-11-01" < "2026-12-05" funciona na ordem certa.
-// Quando o back-end do João Victor estiver pronto, estes dados serão substituídos por
-// chamadas à API (ex.: GET /api/editais).
 //
 // Campos de cada edital:
 //   titulo, orgao, banca, categoria, nivel, status, ano  -> dados básicos (usados na busca e nos filtros)

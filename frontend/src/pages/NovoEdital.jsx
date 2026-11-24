@@ -74,14 +74,18 @@ function CampoLinhas({ id, rotulo, dica, value, onChange }) {
   );
 }
 
-export default function NovoEdital() {
+// Formulário de criar ou alterar edital. Quem decide quando ele aparece é o NovoEdital (no fim do arquivo).
+function FormularioEdital() {
   const { editais, adicionarEdital, atualizarEdital } = useEditais();
   const { usuario } = useAuth(); // quem está logado vira o "Criado por" do edital
   const navigate = useNavigate();
   const { id } = useParams(); // só existe na rota de editar
   const editando = id !== undefined;
-  const original = editando ? editais.find((e) => e.id === Number(id)) : null;
+  const original = editando ? editais.find((e) => String(e.id) === id) : null;
   const ini = original || {}; // valores iniciais dos campos (vazio quando é edital novo)
+
+  const [salvando, setSalvando] = useState(false); // true enquanto espera a resposta do servidor
+  const [erroSalvar, setErroSalvar] = useState(""); // mensagem se o servidor recusar o edital
 
   // Dados básicos
   const [titulo, setTitulo] = useState(ini.titulo || "");
@@ -254,10 +258,12 @@ export default function NovoEdital() {
   }
 
   // Valida e salva o edital. Se der certo, abre a página do edital.
-  function enviarFormulario(ev) {
+  // É "async" porque salvar espera a resposta da API (await).
+  async function enviarFormulario(ev) {
     ev.preventDefault();
     const e = validar();
     setErros(e);
+    setErroSalvar("");
     if (Object.keys(e).length > 0) return;
 
     // Monta o edital no mesmo formato de data/editais.js.
@@ -331,12 +337,20 @@ export default function NovoEdital() {
       disciplinas,
     };
 
-    if (editando) {
-      atualizarEdital(original.id, dados); // "Criado por" continua o mesmo
-      navigate(`/editais/${original.id}`);
-    } else {
-      const novoId = adicionarEdital({ ...dados, criadoPor: usuario.nome });
-      navigate(`/editais/${novoId}`);
+    // Envia para o servidor. Se ele recusar (ex.: dado inválido), mostra a mensagem perto do botão.
+    setSalvando(true);
+    try {
+      if (editando) {
+        await atualizarEdital(original.id, dados); // "Criado por" continua o mesmo
+        navigate(`/editais/${original.id}`);
+      } else {
+        const novoId = await adicionarEdital({ ...dados, criadoPor: usuario.nome });
+        navigate(`/editais/${novoId}`);
+      }
+    } catch (erro) {
+      setErroSalvar(erro.message);
+    } finally {
+      setSalvando(false);
     }
   }
 
@@ -722,9 +736,17 @@ export default function NovoEdital() {
           </p>
         )}
 
+        {/* Erro vindo do servidor ao salvar */}
+        {erroSalvar && (
+          <p className="alerta-erro" role="alert">
+            Não foi possível salvar: {erroSalvar}
+          </p>
+        )}
+
         <div className="acoes">
-          <button type="submit" className="btn-acao">
-            {editando ? "Salvar alterações" : "Salvar edital"}
+          {/* Desativado enquanto espera o servidor, para não salvar duas vezes */}
+          <button type="submit" className="btn-acao" disabled={salvando}>
+            {salvando ? "Salvando..." : editando ? "Salvar alterações" : "Salvar edital"}
           </button>
           <button type="button" className="btn-sec" onClick={() => navigate("/admin/editais")}>
             Cancelar
@@ -733,4 +755,22 @@ export default function NovoEdital() {
       </form>
     </main>
   );
+}
+
+// Tela "Novo edital" e "Alterar edital".
+// Ao alterar, o formulário precisa do edital já carregado do servidor para preencher os campos.
+// Por isso, enquanto a lista carrega, mostra um aviso; depois monta o formulário.
+// O "key" faz o React montar um formulário novo para cada edital (campos sempre do edital certo).
+export default function NovoEdital() {
+  const { carregando } = useEditais();
+  const { id } = useParams();
+
+  if (id && carregando) {
+    return (
+      <main className="pagina">
+        <p role="status">Carregando edital...</p>
+      </main>
+    );
+  }
+  return <FormularioEdital key={id || "novo"} />;
 }

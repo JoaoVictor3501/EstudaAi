@@ -43,7 +43,7 @@ function passaNosFiltros(edital, f) {
 
 // RF09: busca e consulta de editais (termo e filtros avançados)
 export default function Busca() {
-  const { editais } = useEditais();
+  const { editais, carregando, erroCarregar } = useEditais();
   const [termo, setTermo] = useState("");
   const [filtros, setFiltros] = useState(filtrosVazios);
   const [mostrarFiltros, setMostrarFiltros] = useState(false); // painel aberto ou fechado
@@ -118,7 +118,20 @@ export default function Busca() {
         {resultados.length} {resultados.length === 1 ? "edital encontrado" : "editais encontrados"}
       </p>
 
-      {resultados.length === 0 ? (
+      {/* Primeiro os avisos de carregamento e de erro; depois a lista (ou "nenhum encontrado") */}
+      {carregando ? (
+        <div className="card vazio" role="status">
+          <p>Carregando editais...</p>
+          <p className="texto-sec">
+            O servidor gratuito entra em repouso quando fica parado e pode levar até 1 minuto para
+            voltar.
+          </p>
+        </div>
+      ) : erroCarregar ? (
+        <p className="alerta-erro" role="alert">
+          Não foi possível carregar os editais: {erroCarregar}
+        </p>
+      ) : resultados.length === 0 ? (
         <div className="card vazio">
           <Icone nome="busca" tamanho={72} className="icone-vazio" />
           <p>Nenhum edital encontrado.</p>

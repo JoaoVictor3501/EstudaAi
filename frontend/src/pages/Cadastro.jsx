@@ -15,6 +15,7 @@ export default function Cadastro() {
   const [confirmacao, setConfirmacao] = useState("");
   const [erros, setErros] = useState({});
   const [erroGeral, setErroGeral] = useState("");
+  const [enviando, setEnviando] = useState(false); // true enquanto espera a resposta do servidor
 
   // Confere os campos e devolve um objeto com as mensagens de erro (vazio se estiver tudo certo).
   function validar() {
@@ -30,7 +31,8 @@ export default function Cadastro() {
   }
 
   // Roda quando o usuário clica em "Criar conta".
-  function enviarFormulario(ev) {
+  // É "async" porque o cadastro espera a resposta da API (await).
+  async function enviarFormulario(ev) {
     ev.preventDefault(); // impede a página de recarregar
     const e = validar();
     setErros(e);
@@ -38,7 +40,9 @@ export default function Cadastro() {
     if (Object.keys(e).length > 0) return;
 
     // Cria a conta; se o e-mail já existir, mostra o erro geral.
-    const resultado = cadastrar(nome.trim(), email.trim(), senha);
+    setEnviando(true);
+    const resultado = await cadastrar(nome.trim(), email.trim(), senha);
+    setEnviando(false);
     if (!resultado.ok) {
       setErroGeral(resultado.erro);
       return;
@@ -109,8 +113,9 @@ export default function Cadastro() {
             {erroGeral}
           </p>
         )}
-        <button type="submit" className="btn-acao btn-bloco">
-          Criar conta
+        {/* Desativado enquanto espera o servidor, para não criar a conta duas vezes */}
+        <button type="submit" className="btn-acao btn-bloco" disabled={enviando}>
+          {enviando ? "Criando conta..." : "Criar conta"}
         </button>
       </form>
 

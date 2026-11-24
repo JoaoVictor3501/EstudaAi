@@ -69,23 +69,49 @@ function CardResumo({ icone, rotulo, valor, detalhe }) {
 // cadastrados na tela "Novo edital".
 export default function EditalDetalhe() {
   const { id } = useParams();
-  const { editais, removerEdital } = useEditais();
+  const { editais, carregando, erroCarregar, removerEdital } = useEditais();
   const { usuario } = useAuth();
   const navigate = useNavigate();
-  const edital = editais.find((e) => e.id === Number(id));
+  const edital = editais.find((e) => String(e.id) === id);
 
   // Admin: remove o edital (com confirmação) e volta para a tela de gerenciar.
-  function aoRemover() {
+  // Se o servidor recusar, mostra o motivo num alerta e continua na página.
+  async function aoRemover() {
     if (!window.confirm(`Remover o edital "${edital.titulo}"?\nEssa ação não pode ser desfeita.`))
       return;
-    removerEdital(edital.id);
-    navigate("/admin/editais");
+    try {
+      await removerEdital(edital.id);
+      navigate("/admin/editais");
+    } catch (erro) {
+      window.alert(`Não foi possível remover: ${erro.message}`);
+    }
   }
   const [abertas, setAbertas] = useState({}); // disciplinas abertas
   const [topicoAberto, setTopicoAberto] = useState(null); // "disciplina/topico"
   // Nome do cargo escolhido no topo da página ("" = todos os cargos).
   // Fica aqui (e não no SeletorCargo) porque o resumo, a tabela e o gráfico usam essa escolha.
   const [cargoEscolhido, setCargoEscolhido] = useState("");
+
+  // Enquanto a lista vem do servidor, ainda não dá para saber se o edital existe.
+  if (carregando) {
+    return (
+      <main className="pagina">
+        <p role="status">Carregando edital...</p>
+      </main>
+    );
+  }
+
+  // Se a lista não carregou, mostra o motivo.
+  if (erroCarregar) {
+    return (
+      <main className="pagina">
+        <p className="alerta-erro" role="alert">
+          Não foi possível carregar os editais: {erroCarregar}
+        </p>
+        <Link to="/editais">Voltar para a busca</Link>
+      </main>
+    );
+  }
 
   // Se o id da URL não existir, avisa e oferece voltar.
   if (!edital) {

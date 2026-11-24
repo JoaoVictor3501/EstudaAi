@@ -2,7 +2,7 @@
 
 Front-end do EstudaAí (React + Vite + React Router), com as telas dos requisitos essenciais da Atividade 3.1: RF01, RF02, RF09 e RF12.
 
-Por enquanto os dados são de exemplo (sem back-end). As trocas para a API estão marcadas com comentários `Depois:` nos arquivos de `src/context`.
+O login e os editais vêm do back-end (pasta `backend`, publicado no Render), pelo arquivo `src/services/api.js`.
 
 ## Como rodar
 
@@ -13,26 +13,39 @@ npm run dev
 
 Abra o endereço mostrado no terminal (normalmente http://localhost:5173).
 
-## Contas de teste
+## Ligação com a API
+
+O endereço da API fica na variável de ambiente `VITE_API_URL`:
+
+- **Vercel:** Settings > Environment Variables > `VITE_API_URL` = endereço do Render (sem a opção "Sensitive"). Depois de mudar, faça um Redeploy.
+- **No computador:** crie o arquivo `frontend/.env.local` com a linha `VITE_API_URL=https://estudaai-m20s.onrender.com` e rode `npm run dev` de novo. Esse arquivo não vai para o GitHub.
+
+O servidor gratuito do Render entra em repouso quando fica parado; a primeira requisição depois disso pode levar até 1 minuto.
+
+Contas novas são sempre de concurseiro. A conta de administrador é criada direto no banco com o script `backend/src/scripts/criarAdmin.js`.
+
+Para colocar no banco os editais de exemplo (`src/data/editais.js`), use o script `scripts/enviarEditais.js` (as instruções estão no começo do arquivo).
+
+## Modo de exemplo (sem API)
+
+Sem `VITE_API_URL`, o site usa os editais de `src/data/editais.js` e um login simulado, com estas contas:
 
 | Perfil        | E-mail             | Senha  |
 | ------------- | ------------------ | ------ |
 | Concurseiro   | aluno@estudaai.com | 123456 |
 | Administrador | admin@estudaai.com | 123456 |
 
-Ao criar uma conta nova, e-mails que começam com `admin` entram como administrador (regra provisória até o back-end existir).
-
 ## Telas
 
-| Rota                  | Tela                                                  | Requisito   | Incremento |
-| --------------------- | ----------------------------------------------------- | ----------- | ---------- |
-| `/login`              | Login                                                 | RF01        | 1          |
-| `/cadastro`           | Criar conta                                           | RF01        | 1          |
-| `/admin/editais`      | Gerenciar editais: lista com Editar e Remover (só admin) | RF02     | 2          |
-| `/admin/editais/novo` | Cadastro de edital completo: dados, links, locais, isenção, provas e matérias, cargos, cronograma, etapas, disciplinas e tópicos (só admin) | RF02 | 2 |
-| `/admin/editais/:id/editar` | Alteração de edital (mesma tela do cadastro, já preenchida; só admin) | RF02 | 2 |
-| `/editais`            | Busca com termo, categoria e filtros avançados        | RF09        | 3          |
-| `/editais/:id`        | Edital com disciplinas, tópicos e materiais           | RF02 e RF12 | 2 e 4      |
+| Rota                        | Tela                                                                                                                                        | Requisito   | Incremento |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- |
+| `/login`                    | Login                                                                                                                                       | RF01        | 1          |
+| `/cadastro`                 | Criar conta                                                                                                                                 | RF01        | 1          |
+| `/admin/editais`            | Gerenciar editais: lista com Editar e Remover (só admin)                                                                                    | RF02        | 2          |
+| `/admin/editais/novo`       | Cadastro de edital completo: dados, links, locais, isenção, provas e matérias, cargos, cronograma, etapas, disciplinas e tópicos (só admin) | RF02        | 2          |
+| `/admin/editais/:id/editar` | Alteração de edital (mesma tela do cadastro, já preenchida; só admin)                                                                       | RF02        | 2          |
+| `/editais`                  | Busca com termo, categoria e filtros avançados                                                                                              | RF09        | 3          |
+| `/editais/:id`              | Edital com disciplinas, tópicos e materiais                                                                                                 | RF02 e RF12 | 2 e 4      |
 
 ## Estrutura
 
@@ -42,17 +55,26 @@ src/
   App.jsx             rotas e proteção de telas
   assets/             logo do EstudaAí e ícones (assets/icones)
   components/         MenuLateral (navegação e sair), ListaCampos (lista editável do formulário de edital), FormProvas (provas e matérias), LayoutAuth (molde de login/cadastro), PainelFiltros (filtros da busca), Icone, Campo (formulário com erro), Chip
-  context/            AuthContext (login simulado), EditaisContext (lista em memória)
-  data/editais.js     dados de exemplo
+  context/            AuthContext (login, cadastro e sessão com token JWT), EditaisContext (lista de editais da API)
+  services/api.js     função chamarApi: única parte do front que conversa com o back-end
+  data/editais.js     editais de exemplo e funções de formatação (datas, dinheiro, taxa)
   pages/              Login, Cadastro, Busca, EditalDetalhe, NovoEdital (criar e alterar), GerenciarEditais
   styles/             tokens.css (paleta C) e global.css
+scripts/
+  enviarEditais.js    envia os editais de exemplo para o banco, pela API
 ```
 
-## O que trocar quando o back-end estiver pronto
+## Rotas da API usadas pelo front
 
-1. `AuthContext.jsx`: `login` e `cadastrar` passam a chamar `POST /api/auth/login` e `POST /api/auth/register` e guardar o token JWT.
-2. `EditaisContext.jsx`: carregar os editais com `GET /api/editais`, criar com `POST /api/editais`, alterar com `PUT /api/editais/:id` e remover com `DELETE /api/editais/:id`.
-3. `data/editais.js`: pode ser removido (restam só as listas de categorias e níveis).
+| Ação               | Rota                      | Quem pode |
+| ------------------ | ------------------------- | --------- |
+| Entrar             | `POST /api/auth/login`    | todos     |
+| Criar conta        | `POST /api/auth/register` | todos     |
+| Recuperar a sessão | `GET /api/auth/me`        | logado    |
+| Listar editais     | `GET /api/editais`        | logado    |
+| Criar edital       | `POST /api/editais`       | admin     |
+| Alterar edital     | `PUT /api/editais/:id`    | admin     |
+| Remover edital     | `DELETE /api/editais/:id` | admin     |
 
 ## Qualidade de código e hospedagem
 

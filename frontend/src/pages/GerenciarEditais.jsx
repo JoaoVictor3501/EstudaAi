@@ -20,7 +20,7 @@ function valoresUnicos(editais, campo) {
 // Adicionar e alterar abrem o formulário (NovoEdital.jsx); remover é feito aqui mesmo.
 // A busca e os filtros ajudam a achar um edital quando a lista fica grande.
 export default function GerenciarEditais() {
-  const { editais, removerEdital } = useEditais();
+  const { editais, carregando, erroCarregar, removerEdital } = useEditais();
   const [mensagem, setMensagem] = useState(""); // aviso depois de remover
   const [termo, setTermo] = useState(""); // texto digitado na busca
   const [filtros, setFiltros] = useState(filtrosVazios);
@@ -60,13 +60,18 @@ export default function GerenciarEditais() {
 
   // Pede confirmação antes de remover (heurística: prevenção de erros),
   // porque a remoção não pode ser desfeita.
-  function aoRemover(edital) {
+  // É "async" porque espera o servidor confirmar a remoção (await).
+  async function aoRemover(edital) {
     const confirmou = window.confirm(
       `Remover o edital "${edital.titulo}"?\nEssa ação não pode ser desfeita.`
     );
     if (!confirmou) return;
-    removerEdital(edital.id);
-    setMensagem(`Edital "${edital.titulo}" removido.`);
+    try {
+      await removerEdital(edital.id);
+      setMensagem(`Edital "${edital.titulo}" removido.`);
+    } catch (erro) {
+      setMensagem(`Não foi possível remover "${edital.titulo}": ${erro.message}`);
+    }
   }
 
   return (
@@ -147,7 +152,20 @@ export default function GerenciarEditais() {
         {resultados.length} {resultados.length === 1 ? "edital" : "editais"} na lista
       </p>
 
-      {editais.length === 0 ? (
+      {/* Primeiro os avisos de carregamento e de erro; depois a tabela (ou "nenhum") */}
+      {carregando ? (
+        <div className="card vazio" role="status">
+          <p>Carregando editais...</p>
+          <p className="texto-sec">
+            O servidor gratuito entra em repouso quando fica parado e pode levar até 1 minuto para
+            voltar.
+          </p>
+        </div>
+      ) : erroCarregar ? (
+        <p className="alerta-erro" role="alert">
+          Não foi possível carregar os editais: {erroCarregar}
+        </p>
+      ) : editais.length === 0 ? (
         <div className="card vazio">
           <p>Nenhum edital cadastrado.</p>
         </div>
