@@ -501,6 +501,42 @@ input[aria-invalid="true"] {
   border-color: var(--cor-erro);
 }
 
+/* Campo de senha: o botão de olho fica dentro do campo, no canto direito */
+.campo-senha {
+  position: relative;
+}
+
+.campo-senha input {
+  padding-right: 48px; /* espaço para o botão não cobrir o texto */
+}
+
+.btn-olho {
+  position: absolute;
+  top: 50%;
+  right: var(--espaco-1);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--cor-texto-secundario);
+}
+
+.btn-olho:hover {
+  color: var(--cor-primaria);
+  background: var(--cor-primaria-suave);
+}
+
+/* Esconde o olho nativo do Edge para não aparecerem dois */
+input::-ms-reveal {
+  display: none;
+}
+
 .campo-erro {
   color: var(--cor-erro-texto);
   font-size: 0.85rem;
